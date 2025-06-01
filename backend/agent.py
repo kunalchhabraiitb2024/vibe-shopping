@@ -5,9 +5,9 @@ import pandas as pd
 from datetime import datetime
 from dotenv import load_dotenv
 import google.generativeai as genai
-from backend.keyword_mappings import get_keyword_attributes, search_keywords
-from backend.dynamic_keyword_mapper import DynamicKeywordMapper, get_dynamic_keywords
-from backend.advanced_enhancements import (
+from keyword_mappings import get_keyword_attributes, search_keywords
+from dynamic_keyword_mapper import DynamicKeywordMapper, get_dynamic_keywords
+from advanced_enhancements import (
     AdvancedVibeEngine, SmartFiltering, ConversationFlowManager, 
     AdvancedRecommendationEngine,
     apply_advanced_filtering, generate_enhanced_recommendations
