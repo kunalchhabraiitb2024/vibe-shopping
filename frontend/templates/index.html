@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vibe Shopping Agent</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div id="chat-container">
+        <div class="header">
+            ✨ Vibe Shopping Agent ✨
+        </div>
+        <div id="chat-box">
+            <div class="welcome-message">
+                Hi! I'm your enhanced vibe shopping assistant with advanced AI features! Tell me about your style mood and I'll help you find perfect pieces with outfit suggestions, trending recommendations, and smart seasonal insights!
+                <br><br>
+                Try saying something like: <em>"I want something cute for brunch"</em>, <em>"professional but comfortable"</em>, <em>"boho chic for a festival"</em>, or <em>"fresh summer vibes"</em>
+                <br><br>
+                ✨ <strong>New Features:</strong> Outfit completion suggestions, seasonal style intelligence, trending item recommendations, and budget-smart filtering!
+                <br><br>
+                💬 Type <em>"reset"</em> anytime to start a new shopping conversation.
+            </div>
+        </div>
+        <div class="input-container">
+            <input type="text" id="user-input" placeholder="Describe your vibe...">
+            <button id="send-button">Send</button>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html> 
