@@ -2,7 +2,7 @@ from flask import Flask, request, jsonify, render_template
 from flask_cors import CORS
 import logging
 import os
-from agent import VibeShoppingAgent
+from backend.agent import VibeShoppingAgent
 
 # Set up Flask app with templates and static folders in the frontend directory
 template_dir = os.path.abspath('../frontend/templates')
