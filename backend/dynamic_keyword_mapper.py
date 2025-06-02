@@ -1,9 +1,4 @@
-"""
-Dynamic Keyword Mapper for Vibe-Based Shopping Agent
-
-This module implements intelligent keyword extraction from the catalog
-and LLM-based semantic mapping of user queries to catalog keywords.
-"""
+"""Dynamic Keyword Mapper for Vibe-Based Shopping Agent"""
 
 import pandas as pd
 import re
@@ -18,12 +13,10 @@ load_dotenv()
 
 class DynamicKeywordMapper:
     def __init__(self, catalog_path: str = "Apparels_shared.xlsx"):
-        """Initialize the dynamic keyword mapper with catalog data."""
         self.catalog_path = catalog_path
         self.catalog_keywords = {}
         self.semantic_cache = {}
         
-        # Initialize Google Gemini API
         api_key = os.getenv('GOOGLE_API_KEY')
         if api_key:
             genai.configure(api_key=api_key)
@@ -32,16 +25,12 @@ class DynamicKeywordMapper:
             print("Warning: GOOGLE_API_KEY not found. LLM features will not work.")
             self.model = None
         
-        # Load and process catalog
         self.load_catalog_keywords()
     
     def load_catalog_keywords(self):
-        """Extract unique keywords from catalog for each attribute."""
         try:
-            # Read Excel file
             df = pd.read_excel(self.catalog_path)
             
-            # Key attributes to extract keywords from
             attributes = [
                 'category', 'brand', 'color_or_print', 'fabric', 
                 'fit', 'sleeve_length', 'pattern', 'style', 'occasion',
@@ -51,19 +40,16 @@ class DynamicKeywordMapper:
             self.catalog_keywords = {}
             
             for attr in attributes:
-                if attr in df.columns:
-                    # Get unique non-null values
-                    unique_values = df[attr].dropna().unique()
-                    
-                    # Clean and extract individual keywords
-                    keywords = set()
-                    for value in unique_values:
-                        if isinstance(value, str):
-                            # Split on common delimiters and clean
-                            parts = re.split(r'[,;/&\-\s]+', value.lower())
+                    if attr in df.columns:
+                        unique_values = df[attr].dropna().unique()
+                        
+                        keywords = set()
+                        for value in unique_values:
+                            if isinstance(value, str):
+                                parts = re.split(r'[,;/&\-\s]+', value.lower())
                             for part in parts:
                                 part = part.strip()
-                                if part and len(part) > 1:  # Skip single characters
+                                if part and len(part) > 1:
                                     keywords.add(part)
                     
                     self.catalog_keywords[attr] = sorted(list(keywords))
@@ -74,47 +60,28 @@ class DynamicKeywordMapper:
                 
         except Exception as e:
             print(f"Error loading catalog keywords: {e}")
-            # Fallback to empty keywords
             self.catalog_keywords = {}
     
     def get_catalog_keywords(self, attribute: str) -> List[str]:
-        """Get extracted keywords for a specific attribute."""
         return self.catalog_keywords.get(attribute, [])
     
-    def map_user_query_to_keywords(self, user_query: str, last_asked_attribute: Optional[str] = None) -> Dict[str, List[str]]: # MODIFIED: Added last_asked_attribute
-        """
-        Use LLM to intelligently map user query to catalog keywords.
-        
-        Args:
-            user_query: User's natural language query
-            last_asked_attribute: The attribute the user was last asked about (optional)
-            
-        Returns:
-            Dictionary mapping attributes to matched keywords
-        """
-        # Check cache first
-        # Cache key should probably include last_asked_attribute if it significantly changes the outcome
-        # For now, keeping it simple. Consider refining cache key if needed.
+    def map_user_query_to_keywords(self, user_query: str, last_asked_attribute: Optional[str] = None) -> Dict[str, List[str]]:
         query_lower = user_query.lower().strip()
-        if query_lower in self.semantic_cache and last_asked_attribute is None: # Simple cache check
+        if query_lower in self.semantic_cache and last_asked_attribute is None:
             return self.semantic_cache[query_lower]
         
-        # Special case for "anything works" - return empty to skip follow-ups
         if any(phrase in query_lower for phrase in ["anything works", "anything's fine", "doesn't matter", "any is fine"]):
             return {"skip_followup": True}
         
-        # Extract price information first
         result = self._extract_price_info(user_query)
         
         if not self.model:
             print("No LLM model available, using fallback matching")
             fallback_result = self._fallback_keyword_matching(user_query)
-            # Merge price info with fallback result
             result.update(fallback_result)
             return result
         
         try:
-            # Prepare catalog keywords for LLM context
             keywords_context = self._format_keywords_for_llm()
             
             context_hint = ""
@@ -154,10 +121,8 @@ Only include attributes that are relevant to the query. Use exact keywords from 
 
             response = self.model.generate_content(prompt)
             
-            # Parse LLM response
             response_text = response.text.strip()
             
-            # Extract JSON from response (handle markdown code blocks)
             if "```json" in response_text:
                 json_start = response_text.find("```json") + 7
                 json_end = response_text.find("```", json_start)
@@ -169,16 +134,13 @@ Only include attributes that are relevant to the query. Use exact keywords from 
             
             llm_result = json.loads(response_text)
             
-            # Validate keywords exist in catalog
             validated_result = {}
             for attr, keywords in llm_result.items():
                 if attr in self.catalog_keywords:
                     valid_keywords = []
                     for keyword in keywords:
-                        # Case-insensitive matching
                         catalog_keywords_lower = [k.lower() for k in self.catalog_keywords[attr]]
                         if keyword.lower() in catalog_keywords_lower:
-                            # Find original case
                             for orig_keyword in self.catalog_keywords[attr]:
                                 if orig_keyword.lower() == keyword.lower():
                                     valid_keywords.append(orig_keyword)
@@ -186,37 +148,29 @@ Only include attributes that are relevant to the query. Use exact keywords from 
                     if valid_keywords:
                         validated_result[attr] = valid_keywords
             
-            # Merge price info with validated LLM result
             result.update(validated_result)
             
-            # Cache the result
             self.semantic_cache[query_lower] = result
             
             return result
             
         except Exception as e:
             print(f"Error in LLM mapping: {e}")
-            # Fallback to simple keyword matching
             fallback_result = self._fallback_keyword_matching(user_query)
-            # Merge price info with fallback result
             result.update(fallback_result)
             return result
     
     def _format_keywords_for_llm(self) -> str:
-        """Format catalog keywords for LLM context."""
         formatted = []
         for attr, keywords in self.catalog_keywords.items():
-            # Limit to most common/relevant keywords to stay within token limits
             limited_keywords = keywords[:20] if len(keywords) > 20 else keywords
             formatted.append(f"{attr}: {', '.join(limited_keywords)}")
         return '\n'.join(formatted)
     
     def _fallback_keyword_matching(self, user_query: str) -> Dict[str, List[str]]:
-        """Fallback to simple string matching if LLM fails."""
         result = {}
         query_lower = user_query.lower()
         
-        # Special seasonal mappings for fallback
         seasonal_mappings = {
             "winter": {"fabric": ["wool", "fleece"], "sleeve_length": ["long sleeves", "full sleeves"]},
             "summer": {"fabric": ["cotton", "linen"], "sleeve_length": ["short sleeves", "sleeveless"]},
@@ -224,7 +178,6 @@ Only include attributes that are relevant to the query. Use exact keywords from 
             "fall": {"fabric": ["wool", "cotton"], "sleeve_length": ["long sleeves", "full sleeves"]}
         }
         
-        # Check for seasonal terms
         for season, mappings in seasonal_mappings.items():
             if season in query_lower or f"{season} options" in query_lower:
                 for attr, values in mappings.items():
@@ -237,7 +190,6 @@ Only include attributes that are relevant to the query. Use exact keywords from 
                         if matched:
                             result[attr] = matched
         
-        # Regular keyword matching
         for attr, keywords in self.catalog_keywords.items():
             matched = []
             for keyword in keywords:
