@@ -1,8 +1,4 @@
-# Comprehensive Keyword to Attribute Mapping System
-# This handles vibe-based keywords across all apparel categories
-
 KEYWORD_MAPPINGS = {
-    # STYLE VIBES
     "comfy": {"fit": "Relaxed"},
     "comfortable": {"fit": "Relaxed"},
     "cozy": {"fit": "Relaxed", "fabric": ["Cotton", "Modal jersey", "Fleece"]},
@@ -19,7 +15,6 @@ KEYWORD_MAPPINGS = {
     "structured": {"fit": "Tailored"},
     "professional": {"fit": "Tailored", "occasion": "Work"},
     
-    # OCCASION KEYWORDS
     "work": {"occasion": "Work"},
     "office": {"occasion": "Work"},
     "business": {"occasion": "Work"},
@@ -38,7 +33,6 @@ KEYWORD_MAPPINGS = {
     "weekend": {"occasion": "Casual"},
     "lounging": {"occasion": "Casual"},
     
-    # FABRIC KEYWORDS
     "silk": {"fabric": "Silk"},
     "silky": {"fabric": "Silk"},
     "luxe": {"fabric": ["Silk", "Satin", "Velvet"]},
@@ -51,7 +45,6 @@ KEYWORD_MAPPINGS = {
     
     "linen": {"fabric": "Linen"},
     
-    # SEASONAL KEYWORDS
     "summer": {"fabric": ["Linen", "Cotton"], "sleeve_length": ["Short sleeves", "Sleeveless"], "category": "dress"},
     "summer options": {"fabric": ["Linen", "Cotton"], "sleeve_length": ["Short sleeves", "Sleeveless"]},
     "summer vibes": {"fabric": ["Linen", "Cotton"], "sleeve_length": ["Short sleeves", "Sleeveless"]},
@@ -76,7 +69,7 @@ KEYWORD_MAPPINGS = {
     "stretch": {"fabric": ["Stretch", "Modal jersey"]},
     "elastic": {"fabric": ["Stretch", "Modal jersey"]},
     
-    # COLOR/PRINT KEYWORDS
+
     "black": {"color_or_print": "Black"},
     "white": {"color_or_print": "White"},
     "navy": {"color_or_print": "Navy"},
@@ -109,7 +102,7 @@ KEYWORD_MAPPINGS = {
     "vibrant": {"color_or_print": "Bright"},
     "bold": {"color_or_print": "Bright"},
     
-    # SLEEVE KEYWORDS (for tops/dresses)
+
     "sleeveless": {"sleeve_length": "Sleeveless"},
     "tank": {"sleeve_length": "Sleeveless"},
     "strapless": {"sleeve_length": "Strapless"},
@@ -124,7 +117,7 @@ KEYWORD_MAPPINGS = {
     "full sleeve": {"sleeve_length": "Full sleeves"},
     "full sleeves": {"sleeve_length": "Full sleeves"},
     
-    # NECKLINE KEYWORDS (for tops/dresses)
+
     "v-neck": {"neckline": "V-neck"},
     "vneck": {"neckline": "V-neck"},
     "scoop": {"neckline": "Scoop neck"},
@@ -139,7 +132,7 @@ KEYWORD_MAPPINGS = {
     "turtle": {"neckline": "High neck"},
     "turtleneck": {"neckline": "High neck"},
     
-    # LENGTH KEYWORDS (for dresses/skirts)
+
     "mini": {"length": "Mini"},
     "short": {"length": "Mini"},
     "midi": {"length": "Midi"},
@@ -150,7 +143,7 @@ KEYWORD_MAPPINGS = {
     "floor": {"length": "Maxi"},
     "ankle": {"length": "Maxi"},
     
-    # PANT TYPE KEYWORDS
+
     "cargo": {"pant_type": "Cargo", "category": "pants"},
     "cargos": {"pant_type": "Cargo", "category": "pants"},
     "cargo pants": {"pant_type": "Cargo", "category": "pants"},
@@ -172,7 +165,7 @@ KEYWORD_MAPPINGS = {
     "trousers": {"category": "pants"},
     "pants": {"category": "pants"},
     
-    # CATEGORY KEYWORDS
+
     "top": {"category": "top"},
     "tops": {"category": "top"},
     "shirt": {"category": "top"},
@@ -187,7 +180,7 @@ KEYWORD_MAPPINGS = {
     "skirt": {"category": "skirt"},
     "skirts": {"category": "skirt"},
     
-    # STYLE COMBINATIONS
+
     "boho": {"fit": "Relaxed", "color_or_print": "Floral", "fabric": ["Linen", "Cotton"]},
     "bohemian": {"fit": "Relaxed", "color_or_print": "Floral", "fabric": ["Linen", "Cotton"]},
     
@@ -195,7 +188,7 @@ KEYWORD_MAPPINGS = {
     "classic": {"color_or_print": "Solid", "fit": "Tailored"},
     "timeless": {"color_or_print": "Solid", "fit": "Tailored"},
     
-    # SOPHISTICATION/CLASSY KEYWORDS
+
     "classy": {"fit": "Tailored", "fabric": ["Silk", "Satin", "Wool"], "color_or_print": ["Solid", "Black", "Navy"], "occasion": "Work"},
     "sophisticated": {"fit": "Tailored", "fabric": ["Silk", "Satin", "Wool"], "color_or_print": ["Solid", "Black", "Navy"]},
     "elegant": {"fit": "Tailored", "fabric": ["Silk", "Satin"], "color_or_print": ["Solid", "Black", "Navy"]},
