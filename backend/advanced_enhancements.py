@@ -6,8 +6,6 @@ import re
 from difflib import SequenceMatcher
 
 class AdvancedVibeEngine:
-    """Advanced vibe understanding with sophisticated style combinations and seasonal mappings"""
-    
     def __init__(self):
         self.seasonal_mappings = {
             'spring': {
@@ -61,7 +59,6 @@ class AdvancedVibeEngine:
         }
     
     def get_seasonal_attributes(self):
-        """Get style attributes based on current season"""
         month = datetime.now().month
         if month in [3, 4, 5]:
             season = 'spring'
@@ -75,7 +72,6 @@ class AdvancedVibeEngine:
         return self.seasonal_mappings.get(season, {})
     
     def analyze_style_combination(self, query):
-        """Analyze query for sophisticated style combinations"""
         query_lower = query.lower()
         detected_styles = {}
         
@@ -86,7 +82,6 @@ class AdvancedVibeEngine:
         return detected_styles
 
 class SmartFiltering:
-    """Enhanced filtering with fuzzy matching and intelligent recommendations"""
     
     def __init__(self):
         self.color_families = {
@@ -104,7 +99,6 @@ class SmartFiltering:
         }
     
     def fuzzy_match_attributes(self, user_input, available_options, threshold=0.6):
-        """Fuzzy matching for attribute values"""
         matches = []
         user_input_lower = user_input.lower()
         
@@ -117,10 +111,8 @@ class SmartFiltering:
         return sorted(matches, key=lambda x: x[1], reverse=True)
     
     def match_color_palette(self, user_color, df):
-        """Match colors within the same color family"""
         user_color_lower = user_color.lower()
         
-        # Find color family
         target_family = None
         for family, colors in self.color_families.items():
             if any(color in user_color_lower for color in colors):
@@ -129,14 +121,12 @@ class SmartFiltering:
         
         if target_family:
             family_colors = self.color_families[target_family]
-            # Filter products that match any color in the same family
             mask = df['color_or_print'].str.lower().str.contains('|'.join(family_colors), na=False)
             return df[mask]
         
         return df
     
     def intelligent_price_filtering(self, price_hint, df):
-        """Smart price filtering based on budget hints"""
         price_hint_lower = price_hint.lower()
         
         for category, info in self.price_intelligence.items():
@@ -156,7 +146,6 @@ class SmartFiltering:
         return df
 
 class ConversationFlowManager:
-    """Enhanced conversation flow with memory and learning"""
     
     def __init__(self):
         self.user_preferences = defaultdict(dict)
@@ -208,13 +197,13 @@ class ConversationFlowManager:
                               key=lambda x: priority_map.get(x, 0), reverse=True)
         
         question_templates = {
-            'category': "What type of clothing are you looking for?",
-            'occasion': "What occasion will you be wearing this for?",
-            'fit': "How would you like it to fit?",
-            'available_sizes': "What size do you need?",
-            'price': "What's your budget range?",
-            'color_or_print': "Any color preferences?",
-            'fabric': "Any fabric preferences?"
+            'category': "What type of clothing are you looking for? (e.g., 'dresses', 'tops', 'pants' or 'no preference')",
+            'occasion': "What occasion will you be wearing this for? (e.g., 'work', 'casual to formal', 'at least semi-formal' or 'no preference')",
+            'fit': "How would you like it to fit? (e.g., 'relaxed', 'tailored to loose', 'at least fitted' or 'no preference')",
+            'available_sizes': "What size do you need? (e.g., 'M', 'L to XL', 'at least Large' or 'no preference')",
+            'price': "What's your budget? (e.g., 'under $100', '$50-150', 'at least $30' or 'no budget range')",
+            'color_or_print': "Any color preferences? (e.g., 'blue', 'red to pink', 'at least neutral' or 'no preference')",
+            'fabric': "Any fabric preferences? (e.g., 'cotton', 'silk to linen', 'at least breathable' or 'no preference')"
         }
         
         for attr in sorted_missing[:2]:  # Limit to 2 questions
@@ -260,9 +249,7 @@ class AdvancedRecommendationEngine:
             # Find items in complementary categories
             comp_items = self.df[self.df['category'] == comp_category]
             
-            # Filter by compatible attributes (color, style, etc.)
             compatible_items = self.filter_compatible_items(selected_item, comp_items)
-            # Clean NaN values before converting to dict
             clean_suggestions = self._clean_nan_values(compatible_items.head(3).to_dict('records'))
             suggestions.extend(clean_suggestions)
         
@@ -291,7 +278,6 @@ class AdvancedRecommendationEngine:
         
         compatible = candidate_items.copy()
         
-        # Filter by occasion compatibility
         if base_occasion and isinstance(base_occasion, str):
             compatible = compatible[
                 compatible['occasion'].astype(str).str.contains(base_occasion, na=False) |
@@ -518,7 +504,7 @@ def apply_advanced_filtering(df, query, smart_filtering):
     return filtered_df
 
 def generate_enhanced_recommendations(agent, filtered_df, user_attributes):
-    """Generate recommendations with advanced features"""
+    """Generate recommendations with advanced features - CONSISTENT RESULTS"""
     recommendations = []
     
     # Safety check - if filtered_df is empty, return empty list
@@ -526,48 +512,31 @@ def generate_enhanced_recommendations(agent, filtered_df, user_attributes):
         print("DEBUG: generate_enhanced_recommendations received empty filtered_df")
         return []
     
-    # Ensure better variety by sampling from different price ranges and styles
+    # FIXED: Use consistent, deterministic selection
     total_items = len(filtered_df)
     print(f"DEBUG: generate_enhanced_recommendations received {total_items} items")
     
-    if total_items <= 7:
-        # If we have 7 or fewer items, show them all
-        selected_items = filtered_df
-    else:
-        # Smart sampling to ensure variety
-        # Take first 3 items (likely most relevant)
-        top_items = filtered_df.head(3)
-        
-        # Take some items from the middle and end for variety
-        mid_start = total_items // 3
-        mid_items = filtered_df.iloc[mid_start:mid_start+2]
-        
-        # Take some items from the end (including cargo which is last)
-        end_items = filtered_df.tail(2)
-        
-        # Combine them
-        selected_items = pd.concat([top_items, mid_items, end_items]).drop_duplicates()
-        
-        # If we still don't have enough variety, fill with remaining items
-        if len(selected_items) < 7:
-            remaining_indices = set(filtered_df.index) - set(selected_items.index)
-            remaining_items = filtered_df.loc[list(remaining_indices)]
-            additional_items = remaining_items.head(7 - len(selected_items))
-            selected_items = pd.concat([selected_items, additional_items])
+    # Always use simple deterministic selection - take up to 7 items from the top
+    # This ensures consistent results for the same filtered data
+    max_recommendations = min(7, total_items)
+    selected_items = filtered_df.head(max_recommendations)
+    
+    print(f"DEBUG: Selected {len(selected_items)} items deterministically")
     
     try:
-        for _, item in selected_items.iterrows():
-            if len(recommendations) >= 7:  # Limit total recommendations
-                break
-                
+        for i, (_, item) in enumerate(selected_items.iterrows()):
             # Convert to dict with proper handling of potential errors
             try:
                 rec = item.to_dict()
+                # Clean up any NaN values
+                for key, value in rec.items():
+                    if pd.isna(value):
+                        rec[key] = None
             except Exception as e:
                 print(f"ERROR converting item to dict: {e}")
                 # Create a minimal dict with essential properties
                 rec = {
-                    'id': getattr(item, 'id', ''),
+                    'id': getattr(item, 'id', str(i)),
                     'name': getattr(item, 'name', 'Unknown Item'),
                     'price': getattr(item, 'price', 0)
                 }
@@ -575,34 +544,28 @@ def generate_enhanced_recommendations(agent, filtered_df, user_attributes):
             # Add outfit completion suggestions
             try:
                 outfit_suggestions = agent.recommendation_engine.suggest_outfit_completion(rec)
-                rec['outfit_suggestions'] = outfit_suggestions
+                rec['outfit_suggestions'] = outfit_suggestions[:2]  # Limit to 2 suggestions
             except Exception as e:
                 print(f"ERROR adding outfit suggestions: {e}")
                 rec['outfit_suggestions'] = []
             
             recommendations.append(rec)
+            
     except Exception as e:
         print(f"ERROR in recommendation generation: {e}")
-        # If all else fails, create simple recommendations from the dataframe
+        # Simple fallback - convert DataFrame to dict records
         try:
-            for i, (_, row) in enumerate(filtered_df.iterrows()):
-                if i >= 7:  # Limit to 7 items
-                    break
+            recommendations = []
+            for i, row in filtered_df.head(7).iterrows():
                 recommendations.append({
                     'id': str(row.get('id', i)),
                     'name': row.get('name', f'Item {i}'),
-                    'price': row.get('price', 0)
+                    'price': row.get('price', 0),
+                    'outfit_suggestions': []
                 })
         except Exception as e2:
             print(f"CRITICAL ERROR in fallback recommendation: {e2}")
-            # Last resort empty list
             return []
     
-    # Add trending items if space allows (reduce to 1 to make room for more variety)
-    trending = agent.recommendation_engine.get_trending_recommendations(user_attributes, 1)
-    for item in trending:
-        if len(recommendations) < 7:  # Limit total recommendations
-            item['is_trending'] = True
-            recommendations.append(item)
-    
+    print(f"DEBUG: Returning {len(recommendations)} consistent recommendations")
     return recommendations
