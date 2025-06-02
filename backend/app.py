@@ -4,17 +4,17 @@ import logging
 import os
 from agent import VibeShoppingAgent
 
-# Set up Flask app with templates and static folders in the frontend directory
-template_dir = os.path.abspath('../frontend/templates')
-static_dir = os.path.abspath('../frontend/static')
-app = Flask(__name__, template_folder=template_dir, static_folder=static_dir)
+backend_dir = os.path.dirname(os.path.abspath(__file__))
+project_root = os.path.dirname(backend_dir)
+template_dir = os.path.join(project_root, 'frontend', 'templates')
+static_dir = os.path.join(project_root, 'frontend', 'static')
+
+app = Flask(__name__, template_folder=template_dir, static_folder=static_dir, static_url_path='/static')
 CORS(app)
 
-# Set up logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# Initialize the agent
 agent = VibeShoppingAgent()
 
 @app.route('/')
@@ -40,7 +40,6 @@ def chat():
         
         logger.info(f"Processing query: {query}")
         
-        # Process the query with the agent
         response = agent.process_query(query)
         
         logger.info(f"Agent response: {response}")
